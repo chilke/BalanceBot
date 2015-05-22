@@ -7,6 +7,7 @@
 #include "ControlState.h"
 #include "Motor.h"
 #include "MPU6050.h"
+#include "PidControl.h"
 
 class RC
 {
