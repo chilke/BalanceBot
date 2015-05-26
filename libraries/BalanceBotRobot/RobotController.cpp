@@ -1,7 +1,10 @@
 #include "Robot.h"
 
 RC::RC() : leftMotor(3, 4, 9), rightMotor(5, 6, 10),
-accelGyro(0x68), comm(COMMUNICATION_CE, COMMUNICATION_CS)
+accelGyro(0x68), comm(COMMUNICATION_CE, COMMUNICATION_CS),
+motorPid(&RobotStorage.data.values.kp,
+    &RobotStorage.data.values.ki,
+    &RobotStorage.data.values.kd)
 {
 }
 
@@ -22,9 +25,6 @@ void RC::begin()
     accelGyro.setXGyroOffset(X_GYRO_OFF);
     accelGyro.setYGyroOffset(Y_GYRO_OFF);
     accelGyro.setZGyroOffset(Z_GYRO_OFF);
-
-    integral = 0;
-    preError = 0;
 
     f_angle = 0;
     trim = 0;
@@ -203,12 +203,10 @@ void RC::doWork()
     int16_t rightOut = 0;
     float r_angle;
     float error;
-    float errorSum;
-    float dErr;
     float K, A, omega;
-    uint32_t now = millis();
-    uint16_t timeChange = now-lastTime;
-    float dt = (now-lastTime) / 1000.0;
+
+    float dt = (millis()-lastTime) / 1000.0;
+    lastTime = millis();
 
     calculateBatteryLevel();
 
@@ -223,26 +221,14 @@ void RC::doWork()
     if (abs(r_angle) < MAX_STABLE_ANGLE)
     {
         error = trim +currentSpeed - f_angle;
-        dErr = (error - preError) / (float)timeChange;
-        integral += error * (float)timeChange;
-        if (integral > MAX_INTEGRAL)
-        {
-            integral = MAX_INTEGRAL;
-        }
-        else if (integral < -MAX_INTEGRAL)
-        {
-            integral = -MAX_INTEGRAL;
-        }
 
-        errorSum = error * RobotStorage.data.values.kp;
-        errorSum += dErr * RobotStorage.data.values.kd;
-        errorSum += integral * RobotStorage.data.values.ki;
+        error = motorPid.process(error);
 
         if (millis()-lastControlTime > MAX_IDLE_CONTROLS)
         {
             currentSpeed = 0;
             //TODO turns = 0
-            if (errorSum > 0)
+            if (error > 0)
             {
                 lean++;
                 if (lean > RobotStorage.data.values.leanCount)
@@ -252,7 +238,7 @@ void RC::doWork()
                     balancedCount = 0;
                 }
             }
-            else if (errorSum < 0)
+            else if (error < 0)
             {
                 lean--;
                 if (lean < -RobotStorage.data.values.leanCount)
@@ -270,23 +256,19 @@ void RC::doWork()
             }
         }
 
-        leftOut = errorSum;
+        leftOut = error;
         leftOut += leftTurn;
-        rightOut = errorSum;
+        rightOut = error;
         rightOut += rightTurn;
-
-        preError = error;
     }
     else
     {
-        integral = 0;
+        motorPid.reset();
         leftOut = rightOut = 0;
     }
 
     leftMotor.setVelocity(leftOut);
     rightMotor.setVelocity(rightOut);
-
-    lastTime = now;
 
     comm.checkReceive();
 
