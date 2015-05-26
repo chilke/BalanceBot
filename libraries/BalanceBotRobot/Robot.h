@@ -6,5 +6,6 @@
 #include "RobotCommunication.h"
 #include "RobotStorage.h"
 #include "Motor.h"
+#include "PidControl.h"
 
 #endif

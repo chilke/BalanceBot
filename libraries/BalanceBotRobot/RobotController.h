@@ -7,6 +7,7 @@
 #include "ControlState.h"
 #include "Motor.h"
 #include "MPU6050.h"
+#include "PidControl.h"
 
 class RC
 {
@@ -25,9 +26,8 @@ private:
     Motor rightMotor;
     MPU6050 accelGyro;
     RobotCommunication comm;
+    PidControl motorPid;
     float f_angle;
-    float integral;
-    float preError;
 
     float trim;
     float balancedTrim;
