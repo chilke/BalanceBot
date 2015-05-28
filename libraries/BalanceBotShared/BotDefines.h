@@ -58,11 +58,12 @@
 /* Communication ----------------------------------------*/
 enum RobotValue: uint8_t
 {
-    RVKp,
-    RVKd,
-    RVKi,
-    RVTrim,
-    RVLeanCount,
+    RVMotorKp,
+    RVMotorKd,
+    RVMotorKi,
+    RVBalanceKp,
+    RVBalanceKd,
+    RVBalanceKi,
     RVMinSpeed,
     RVMaxSpeed,
     RVMaxTurn,
@@ -105,18 +106,27 @@ enum RemoteValue: uint8_t
 #define ROBOT_WRITING_PIPE_DEFAULT DEFAULT_PIPE_1
 #define REMOTE_READING_PIPE_DEFAULT DEFAULT_PIPE_1
 #define REMOTE_WRITING_PIPE_DEFAULT DEFAULT_PIPE_0
-#define KP_DEFAULT 14.0
-#define KP_MIN 0.0
-#define KP_MAX 50.0
-#define KI_DEFAULT 0.01
-#define KI_MIN 0.0
-#define KI_MAX 1.0
-#define KD_DEFAULT 550.0
-#define KD_MIN 0.0
-#define KD_MAX 2000.0
-#define TRIM_ADDER_DEFAULT 0.1
-#define TRIM_ADDER_MIN 0.0
-#define TRIM_ADDER_MAX 1.0
+
+#define MOTOR_KP_DEFAULT 14.0
+#define MOTOR_KP_MIN 0.0
+#define MOTOR_KP_MAX 50.0
+#define MOTOR_KI_DEFAULT 0.01
+#define MOTOR_KI_MIN 0.0
+#define MOTOR_KI_MAX 1.0
+#define MOTOR_KD_DEFAULT 550.0
+#define MOTOR_KD_MIN 0.0
+#define MOTOR_KD_MAX 2000.0
+
+#define BALANCE_KP_DEFAULT 14.0
+#define BALANCE_KP_MIN 0.0
+#define BALANCE_KP_MAX 50.0
+#define BALANCE_KI_DEFAULT 0.01
+#define BALANCE_KI_MIN 0.0
+#define BALANCE_KI_MAX 1.0
+#define BALANCE_KD_DEFAULT 550.0
+#define BALANCE_KD_MIN 0.0
+#define BALANCE_KD_MAX 2000.0
+
 #define CHANNEL_DEFAULT 76U
 
 #define MAX_SPEED_DEFAULT 0.05
@@ -130,9 +140,5 @@ enum RemoteValue: uint8_t
 #define MIN_MOTOR_SPEED_DEFAULT 20
 #define MIN_MOTOR_SPEED_MIN 0
 #define MIN_MOTOR_SPEED_MAX 255
-
-#define LEAN_COUNT_DEFAULT 20
-#define LEAN_COUNT_MIN 0
-#define LEAN_COUNT_MAX 255
 
 #endif

@@ -84,9 +84,6 @@ void RC::updateRobotValue(RobotValue value, int8_t change)
 {
     switch (value)
     {
-        case RVLeanCount:
-        queuedCommand = CCUpdateLeanCount;
-        break;
         case RVMinSpeed:
         queuedCommand = CCUpdateMinSpeed;
         break;
@@ -96,17 +93,23 @@ void RC::updateRobotValue(RobotValue value, int8_t change)
         case RVMaxTurn:
         queuedCommand = CCUpdateMaxTurn;
         break;
-        case RVKp:
-        queuedCommand = CCUpdateKp;
+        case RVMotorKp:
+        queuedCommand = CCUpdateMotorKp;
         break;
-        case RVKd:
-        queuedCommand = CCUpdateKd;
+        case RVMotorKd:
+        queuedCommand = CCUpdateMotorKd;
         break;
-        case RVKi:
-        queuedCommand = CCUpdateKi;
+        case RVMotorKi:
+        queuedCommand = CCUpdateMotorKi;
         break;
-        case RVTrim:
-        queuedCommand = CCUpdateTrim;
+        case RVBalanceKp:
+        queuedCommand = CCUpdateBalanceKp;
+        break;
+        case RVBalanceKd:
+        queuedCommand = CCUpdateBalanceKd;
+        break;
+        case RVBalanceKi:
+        queuedCommand = CCUpdateBalanceKi;
         break;
     }
 
@@ -380,14 +383,13 @@ void RC::handleCommCommand(CommunicationCommand command, uint8_t *data, uint8_t 
         case CCUpdateMaxTurn:
         case CCUpdateMaxSpeed:
         case CCUpdateMinSpeed:
-        case CCUpdateKp:
-        case CCUpdateKi:
-        case CCUpdateKd:
-        case CCUpdateTrim:
+        case CCUpdateMotorKp:
+        case CCUpdateMotorKi:
+        case CCUpdateMotorKd:
+        case CCUpdateBalanceKp:
+        case CCUpdateBalanceKi:
+        case CCUpdateBalanceKd:
         remoteMenu.updateValue(*(float *)data);
-        break;
-        case CCUpdateLeanCount:
-        remoteMenu.updateValue(*(uint8_t *)data);
         break;
         case CCGetBattery:
         if (currentState == RCSNormal && batteryCount >= BATTERY_REFRESH)

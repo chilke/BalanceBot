@@ -26,7 +26,10 @@ private:
     Motor rightMotor;
     MPU6050 accelGyro;
     RobotCommunication comm;
+
     PidControl motorPid;
+    PidControl balancePid;
+
     float f_angle;
 
     float trim;

@@ -166,9 +166,6 @@ bool RM::handleInput(JoystickData *leftState, JoystickData *rightState)
         {
             switch (currentSelection)
             {
-                case MSLeanCount:
-                RemoteController.updateRobotValue(RVLeanCount, adder);
-                break;
                 case MSMinSpeed:
                 RemoteController.updateRobotValue(RVMinSpeed, adder);
                 break;
@@ -178,17 +175,23 @@ bool RM::handleInput(JoystickData *leftState, JoystickData *rightState)
                 case MSMaxTurn:
                 RemoteController.updateRobotValue(RVMaxTurn, adder);
                 break;
-                case MSKp:
-                RemoteController.updateRobotValue(RVKp, adder);
+                case MSMotorKp:
+                RemoteController.updateRobotValue(RVMotorKp, adder);
                 break;
-                case MSKd:
-                RemoteController.updateRobotValue(RVKd, adder);
+                case MSMotorKd:
+                RemoteController.updateRobotValue(RVMotorKd, adder);
                 break;
-                case MSKi:
-                RemoteController.updateRobotValue(RVKi, adder);
+                case MSMotorKi:
+                RemoteController.updateRobotValue(RVMotorKi, adder);
                 break;
-                case MSTrim:
-                RemoteController.updateRobotValue(RVTrim, adder);
+                case MSBalanceKp:
+                RemoteController.updateRobotValue(RVBalanceKp, adder);
+                break;
+                case MSBalanceKd:
+                RemoteController.updateRobotValue(RVBalanceKd, adder);
+                break;
+                case MSBalanceKi:
+                RemoteController.updateRobotValue(RVBalanceKi, adder);
                 break;
                 case MSControlFormat:
                 RemoteController.updateRemoteValue(RVControlFormat, adder);
@@ -228,25 +231,29 @@ void RM::updateDisplay()
         RemoteController.lcd.print(F("MinSpeed      NC"));
         RemoteController.updateRobotValue(RVMinSpeed, 0);
         break;
-        case MSLeanCount:
-        RemoteController.lcd.print(F("LeanCount     NC"));
-        RemoteController.updateRobotValue(RVLeanCount, 0);
+        case MSMotorKp:
+        RemoteController.lcd.print(F("Motor Kp      NC"));
+        RemoteController.updateRobotValue(RVMotorKp, 0);
         break;
-        case MSKp:
-        RemoteController.lcd.print(F("Kprop         NC"));
-        RemoteController.updateRobotValue(RVKp, 0);
+        case MSMotorKd:
+        RemoteController.lcd.print(F("Motor Kd      NC"));
+        RemoteController.updateRobotValue(RVMotorKd, 0);
         break;
-        case MSKd:
-        RemoteController.lcd.print(F("Kdiff         NC"));
-        RemoteController.updateRobotValue(RVKd, 0);
+        case MSMotorKi:
+        RemoteController.lcd.print(F("Motor Ki      NC"));
+        RemoteController.updateRobotValue(RVMotorKi, 0);
         break;
-        case MSKi:
-        RemoteController.lcd.print(F("Kint          NC"));
-        RemoteController.updateRobotValue(RVKi, 0);
+        case MSBalanceKp:
+        RemoteController.lcd.print(F("BalanceKp     NC"));
+        RemoteController.updateRobotValue(RVBalanceKp, 0);
         break;
-        case MSTrim:
-        RemoteController.lcd.print(F("Ktrim         NC"));
-        RemoteController.updateRobotValue(RVTrim, 0);
+        case MSBalanceKd:
+        RemoteController.lcd.print(F("BalanceKd     NC"));
+        RemoteController.updateRobotValue(RVBalanceKd, 0);
+        break;
+        case MSBalanceKi:
+        RemoteController.lcd.print(F("BalanceKi     NC"));
+        RemoteController.updateRobotValue(RVBalanceKi, 0);
         break;
         case MSControlFormat:
         RemoteController.lcd.print(F("Control "));
