@@ -25,14 +25,15 @@ void RS::resetDefaults()
 {
     data.values.readingPipe = ROBOT_READING_PIPE_DEFAULT;
     data.values.writingPipe = ROBOT_WRITING_PIPE_DEFAULT;
-    data.values.kp = KP_DEFAULT;
-    data.values.ki = KI_DEFAULT;
-    data.values.kd = KD_DEFAULT;
-    data.values.trim = TRIM_ADDER_DEFAULT;
+    data.values.motorKp = MOTOR_KP_DEFAULT;
+    data.values.motorKi = MOTOR_KI_DEFAULT;
+    data.values.motorKd = MOTOR_KD_DEFAULT;
+    data.values.balanceKp = BALANCE_KP_DEFAULT;
+    data.values.balanceKi = BALANCE_KI_DEFAULT;
+    data.values.balanceKd = BALANCE_KD_DEFAULT;
     data.values.minSpeed = MIN_MOTOR_SPEED_DEFAULT;
     data.values.maxSpeed = MAX_SPEED_DEFAULT;
     data.values.maxTurn = MAX_TURN_DEFAULT;
-    data.values.leanCount = LEAN_COUNT_DEFAULT;
     data.values.channel = CHANNEL_DEFAULT;
 }
 
@@ -74,20 +75,6 @@ void print64(uint64_t value)
         j = (uint8_t)(value >> (i*8));
         Serial.print(j, HEX);
     }
-}
-
-void RS::debug()
-{
-    Serial.print("Read-");
-    print64(data.values.readingPipe);
-    Serial.println(' ');
-    Serial.print("Write-");
-    print64(data.values.writingPipe);
-    Serial.println(' ');
-    Serial.print("Kp - "); Serial.println(data.values.kp);
-    Serial.print("Ki - "); Serial.println(data.values.ki);
-    Serial.print("Kd - "); Serial.println(data.values.kd);
-    Serial.print("Kt - "); Serial.println(data.values.trim);
 }
 
 RS RobotStorage;

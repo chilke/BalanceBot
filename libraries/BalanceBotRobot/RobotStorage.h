@@ -8,15 +8,15 @@ struct RS_VALUES
 {
     uint64_t readingPipe;
     uint64_t writingPipe;
-    float kp;
-    float ki;
-    float kd;
-    float trim;
+    float motorKp;
+    float motorKi;
+    float motorKd;
+    float balanceKp;
+    float balanceKi;
+    float balanceKd;
     float minSpeed;
     float maxSpeed;
     float maxTurn;
-
-    uint8_t leanCount;
     uint8_t channel;
 };
 
@@ -33,7 +33,6 @@ public:
     void doWork();
     void commit();
     void restore();
-    void debug();
     void resetDefaults();
 
     RS_DATA data;

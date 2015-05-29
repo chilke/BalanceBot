@@ -30,7 +30,6 @@ public:
     void doWork();
     void commit();
     void restore();
-    void debug();
     void resetDefaults();
 
     RS_DATA data;

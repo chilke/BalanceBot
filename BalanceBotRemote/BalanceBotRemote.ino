@@ -12,8 +12,6 @@ void setup() {
   Serial.begin(115200);
   Serial.setTimeout(100);
   RemoteController.begin();
-  
-  RemoteStorage.debug();
 }
 
 void loop() {

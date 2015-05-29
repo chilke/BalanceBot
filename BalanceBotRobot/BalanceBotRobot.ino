@@ -10,8 +10,6 @@ void setup() {
   Serial.begin(115200);
   Serial.setTimeout(100);
   RobotController.begin();
-  
-  RobotStorage.debug();
 }
 
 void loop() {

@@ -2,9 +2,12 @@
 
 RC::RC() : leftMotor(3, 4, 9), rightMotor(5, 6, 10),
 accelGyro(0x68), comm(COMMUNICATION_CE, COMMUNICATION_CS),
-motorPid(&RobotStorage.data.values.kp,
-    &RobotStorage.data.values.ki,
-    &RobotStorage.data.values.kd)
+motorPid(&RobotStorage.data.values.motorKp,
+    &RobotStorage.data.values.motorKi,
+    &RobotStorage.data.values.motorKd),
+balancePid(&RobotStorage.data.values.balanceKp,
+    &RobotStorage.data.values.balanceKi,
+    &RobotStorage.data.values.balanceKd)
 {
 }
 
@@ -27,10 +30,9 @@ void RC::begin()
     accelGyro.setZGyroOffset(Z_GYRO_OFF);
 
     f_angle = 0;
+
     trim = 0;
-    balancedTrim = 0;
-    balancedCount = 0;
-    lean = 0;
+
     currentSpeed = 0;
 
     leftTurn = 0;
@@ -55,7 +57,6 @@ void RC::handleControls(ControlState *state)
     {
         lastControlTime = millis();
     }
-    Serial.print("currentSpeed - "); Serial.println(currentSpeed);
 }
 
 void RC::handleCommCommand(CommunicationCommand command, uint8_t *data, uint8_t length)
@@ -86,41 +87,65 @@ void RC::handleCommCommand(CommunicationCommand command, uint8_t *data, uint8_t 
             RobotStorage.data.values.writingPipe = *(uint64_t *)data;
         }
         break;
-        case CCUpdateKp:
+        case CCUpdateMotorKp:
         if (length == 1)
         {
-            updateValue(&RobotStorage.data.values.kp, KP_MIN, KP_MAX, *(int8_t *)data);
+            updateValue(&RobotStorage.data.values.motorKp, MOTOR_KP_MIN, 
+                MOTOR_KP_MAX, *(int8_t *)data);
         }
-        responseCommand = CCUpdateKp;
-        responseData = (uint8_t *)&RobotStorage.data.values.kp;
-        responseLength = sizeof(RobotStorage.data.values.kp);
+        responseCommand = CCUpdateMotorKp;
+        responseData = (uint8_t *)&RobotStorage.data.values.motorKp;
+        responseLength = sizeof(RobotStorage.data.values.motorKp);
         break;
-        case CCUpdateKi:
+        case CCUpdateMotorKi:
         if (length == 1)
         {
-            updateValue(&RobotStorage.data.values.ki, KI_MIN, KI_MAX, *(int8_t *)data);
+            updateValue(&RobotStorage.data.values.motorKi, MOTOR_KI_MIN, 
+                MOTOR_KI_MAX, *(int8_t *)data);
         }
-        responseCommand = CCUpdateKi;
-        responseData = (uint8_t *)&RobotStorage.data.values.ki;
-        responseLength = sizeof(RobotStorage.data.values.ki);
+        responseCommand = CCUpdateMotorKi;
+        responseData = (uint8_t *)&RobotStorage.data.values.motorKi;
+        responseLength = sizeof(RobotStorage.data.values.motorKi);
         break;
-        case CCUpdateKd:
+        case CCUpdateMotorKd:
         if (length == 1)
         {
-            updateValue(&RobotStorage.data.values.kd, KD_MIN, KD_MAX, *(int8_t *)data);
+            updateValue(&RobotStorage.data.values.motorKd, MOTOR_KD_MIN, 
+                MOTOR_KD_MAX, *(int8_t *)data);
         }
-        responseCommand = CCUpdateKd;
-        responseData = (uint8_t *)&RobotStorage.data.values.kd;
-        responseLength = sizeof(RobotStorage.data.values.kd);
+        responseCommand = CCUpdateMotorKd;
+        responseData = (uint8_t *)&RobotStorage.data.values.motorKd;
+        responseLength = sizeof(RobotStorage.data.values.motorKd);
         break;
-        case CCUpdateTrim:
+        case CCUpdateBalanceKp:
         if (length == 1)
         {
-            updateValue(&RobotStorage.data.values.trim, TRIM_ADDER_MIN, TRIM_ADDER_MAX, *(int8_t *)data);
+            updateValue(&RobotStorage.data.values.balanceKp, BALANCE_KP_MIN, 
+                BALANCE_KP_MAX, *(int8_t *)data);
         }
-        responseCommand = CCUpdateTrim;
-        responseData = (uint8_t *)&RobotStorage.data.values.trim;
-        responseLength = sizeof(RobotStorage.data.values.trim);
+        responseCommand = CCUpdateBalanceKp;
+        responseData = (uint8_t *)&RobotStorage.data.values.balanceKp;
+        responseLength = sizeof(RobotStorage.data.values.balanceKp);
+        break;
+        case CCUpdateBalanceKi:
+        if (length == 1)
+        {
+            updateValue(&RobotStorage.data.values.balanceKi, BALANCE_KI_MIN, 
+                BALANCE_KI_MAX, *(int8_t *)data);
+        }
+        responseCommand = CCUpdateBalanceKi;
+        responseData = (uint8_t *)&RobotStorage.data.values.balanceKi;
+        responseLength = sizeof(RobotStorage.data.values.balanceKi);
+        break;
+        case CCUpdateBalanceKd:
+        if (length == 1)
+        {
+            updateValue(&RobotStorage.data.values.balanceKd, BALANCE_KD_MIN, 
+                BALANCE_KD_MAX, *(int8_t *)data);
+        }
+        responseCommand = CCUpdateBalanceKd;
+        responseData = (uint8_t *)&RobotStorage.data.values.balanceKd;
+        responseLength = sizeof(RobotStorage.data.values.balanceKd);
         break;
         case CCSetChannel:
         if (length == 1)
@@ -179,16 +204,6 @@ void RC::handleCommCommand(CommunicationCommand command, uint8_t *data, uint8_t 
         responseData = (uint8_t *)&RobotStorage.data.values.maxTurn;
         responseLength = sizeof(RobotStorage.data.values.maxTurn);
         break;
-        case CCUpdateLeanCount:
-        if (length == 1)
-        {
-            updateValue(&RobotStorage.data.values.leanCount,
-                LEAN_COUNT_MIN, LEAN_COUNT_MAX, *(int8_t *)data);
-        }
-        responseCommand = CCUpdateLeanCount;
-        responseData = (uint8_t *)&RobotStorage.data.values.leanCount;
-        responseLength = sizeof(RobotStorage.data.values.leanCount);
-        break;
         default:
         responseCommand = CCNack;
     }
@@ -220,7 +235,7 @@ void RC::doWork()
     f_angle = A * (f_angle + omega * dt) + (1-A) * r_angle;
     if (abs(r_angle) < MAX_STABLE_ANGLE)
     {
-        error = trim +currentSpeed - f_angle;
+        error = trim + currentSpeed - f_angle;
 
         error = motorPid.process(error);
 
@@ -228,32 +243,9 @@ void RC::doWork()
         {
             currentSpeed = 0;
             //TODO turns = 0
-            if (error > 0)
-            {
-                lean++;
-                if (lean > RobotStorage.data.values.leanCount)
-                {
-                    lean = 0;
-                    trim += RobotStorage.data.values.trim;
-                    balancedCount = 0;
-                }
-            }
-            else if (error < 0)
-            {
-                lean--;
-                if (lean < -RobotStorage.data.values.leanCount)
-                {
-                    lean = 0;
-                    trim -= RobotStorage.data.values.trim;
-                    balancedCount = 0;
-                }
-            }
+            trim = balancePid.process(error);
 
-            balancedCount++;
-            if (balancedCount > MIN_BALANCED_COUNT)
-            {
-                balancedTrim = trim;
-            }
+            Serial.println(trim);
         }
 
         leftOut = error;
@@ -264,6 +256,8 @@ void RC::doWork()
     else
     {
         motorPid.reset();
+        balancePid.reset();
+        trim = 0;
         leftOut = rightOut = 0;
     }
 

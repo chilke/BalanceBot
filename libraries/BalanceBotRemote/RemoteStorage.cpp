@@ -76,11 +76,4 @@ void RS::commit()
     commitPosition = 0;
 }
 
-void RS::debug()
-{
-    Serial.print("ControlFormat="); Serial.println(data.values.controlFormat);
-    data.values.leftCalibration.debug();
-    data.values.rightCalibration.debug();
-}
-
 RS RemoteStorage;
