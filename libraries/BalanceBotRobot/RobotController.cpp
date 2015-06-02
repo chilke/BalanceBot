@@ -28,8 +28,6 @@ void RC::begin()
 
     f_angle = 0;
     trim = 0;
-    balancedTrim = 0;
-    balancedCount = 0;
     lean = 0;
     currentSpeed = 0;
 
@@ -235,7 +233,6 @@ void RC::doWork()
                 {
                     lean = 0;
                     trim += RobotStorage.data.values.trim;
-                    balancedCount = 0;
                 }
             }
             else if (error < 0)
@@ -245,14 +242,7 @@ void RC::doWork()
                 {
                     lean = 0;
                     trim -= RobotStorage.data.values.trim;
-                    balancedCount = 0;
                 }
-            }
-
-            balancedCount++;
-            if (balancedCount > MIN_BALANCED_COUNT)
-            {
-                balancedTrim = trim;
             }
         }
 

@@ -30,8 +30,6 @@ private:
     float f_angle;
 
     float trim;
-    float balancedTrim;
-    uint8_t balancedCount;
 
     int8_t lean;
 
