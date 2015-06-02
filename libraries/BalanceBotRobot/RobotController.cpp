@@ -243,7 +243,7 @@ void RC::doWork()
         {
             currentSpeed = 0;
             //TODO turns = 0
-            trim = balancePid.process(error);
+            trim += balancePid.process(error/5000);
 
             Serial.println(trim);
         }

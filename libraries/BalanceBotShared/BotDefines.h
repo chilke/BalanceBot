@@ -119,13 +119,13 @@ enum RemoteValue: uint8_t
 
 #define BALANCE_KP_DEFAULT 0.0
 #define BALANCE_KP_MIN 0.0
-#define BALANCE_KP_MAX 50.0
+#define BALANCE_KP_MAX 1.0
 #define BALANCE_KI_DEFAULT 0.5
 #define BALANCE_KI_MIN 0.0
-#define BALANCE_KI_MAX 1.0
+#define BALANCE_KI_MAX 0.05
 #define BALANCE_KD_DEFAULT 100.0
 #define BALANCE_KD_MIN 0.0
-#define BALANCE_KD_MAX 2000.0
+#define BALANCE_KD_MAX 20
 
 #define CHANNEL_DEFAULT 76U
 
