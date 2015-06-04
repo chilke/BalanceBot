@@ -49,11 +49,10 @@ void RC::handleControls(ControlState *state)
         rightTurn = -leftTurn;
     }
 
-    if (currentSpeed != 0)
+    if (currentSpeed != 0 || leftTurn != 0)
     {
         lastControlTime = millis();
     }
-    Serial.print("currentSpeed - "); Serial.println(currentSpeed);
 }
 
 void RC::handleCommCommand(CommunicationCommand command, uint8_t *data, uint8_t length)
@@ -218,7 +217,7 @@ void RC::doWork()
     f_angle = A * (f_angle + omega * dt) + (1-A) * r_angle;
     if (abs(r_angle) < MAX_STABLE_ANGLE)
     {
-        error = trim +currentSpeed - f_angle;
+        error = trim + currentSpeed - f_angle;
 
         error = motorPid.process(error);
 
